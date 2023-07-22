@@ -28,7 +28,6 @@ def encode(graphs: str) -> list[str]:
     phones = number_to_hangul(phones)
     phones = g2p(phones)
     phones = divide_hangul(phones)
-    print(phones)
     ignored = {" ", *string.punctuation}
     return ["_" if p in ignored else p for p in phones]
 
