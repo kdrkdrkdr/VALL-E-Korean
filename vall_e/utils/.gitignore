@@ -1,0 +1,14 @@
+__pycache__
+*.egg-info
+build
+/data
+/runs
+/tmp*
+/wandb
+/results
+demo*
+.python-version
+/examples
+/log
+/ckpt
+/zoo
