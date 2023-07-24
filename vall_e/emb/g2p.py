@@ -9,6 +9,16 @@ from g2pk2 import G2p
 from vall_e.emb.korean import latin_to_hangul, number_to_hangul, divide_hangul
 from tqdm import tqdm
 
+import re
+
+_pad        = '_'
+_punctuation = ',.!?-~…'
+_letters = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㄲㄸㅃㅆㅉㅏㅓㅗㅜㅡㅣㅐㅔ '
+symbols = [_pad] + list(_punctuation) + list(_letters)
+
+_cleaner_cleans = re.compile('['+'^'.join(symbols)+']')
+
+
 
 @cache
 def _get_model():
@@ -28,6 +38,7 @@ def encode(graphs: str) -> list[str]:
     phones = number_to_hangul(phones)
     phones = g2p(phones)
     phones = divide_hangul(phones)
+    phones = ''.join(_cleaner_cleans.findall(phones))
     ignored = {" ", *string.punctuation}
     return ["_" if p in ignored else p for p in phones]
 
@@ -46,10 +57,17 @@ def main():
         phone_path = path.with_name(path.stem.split(".")[0] + ".phn.txt")
         if phone_path.exists():
             continue
-        graphs = _get_graphs(path)
-        phones = encode(graphs)
-        with open(phone_path, "w") as f:
-            f.write(" ".join(phones))
+
+        try:
+            graphs = _get_graphs(path)
+            phones = encode(graphs)
+            
+            with open(phone_path, "w") as f:
+                f.write(" ".join(phones))
+
+        except ValueError:
+            pass
+        
 
 
 if __name__ == "__main__":
