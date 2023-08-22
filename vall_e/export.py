@@ -11,14 +11,16 @@ def main():
     parser.add_argument("path")
     args = parser.parse_args()
 
+    save_path = args.path.replace('.pt', '.ckpt')
+
     engine = load_engines()
     model = engine["model"].module.cpu()
     train_dl, *_ = create_train_val_dataloader()
     assert isinstance(train_dl.dataset, VALLEDatset)
     model.phone_symmap = train_dl.dataset.phone_symmap
     model.spkr_symmap = train_dl.dataset.spkr_symmap
-    torch.save(model, args.path)
-    print(args.path, "saved.")
+    torch.save(model, save_path)
+    print(save_path, "saved.")
 
 
 if __name__ == "__main__":
